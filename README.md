@@ -1,6 +1,6 @@
 # ai-creative-lab
 
-A marketplace of AI video skills from the **AI Creative Lab** livestream. Install only the skills you want.
+A marketplace of AI video skills for Claude Code. Install only the skills you want.
 
 ## Install the marketplace (once)
 
@@ -72,6 +72,3 @@ scripts/sync.ts                           ← run this before committing
 
 The sync script reads frontmatter from SKILL.md to generate the plugin manifest the first time. On subsequent syncs, it preserves your custom `plugins/<name>/.claude-plugin/plugin.json` and only updates the SKILL.md copy.
 
-## The show
-
-AI Creative Lab is a livestream about building with AI video tools and agent workflows. Skills from the stream land here.
