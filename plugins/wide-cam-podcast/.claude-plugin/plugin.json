@@ -1,8 +1,0 @@
-{
-  "name": "wide-cam-podcast",
-  "description": "Produce a short-form wide-cam AI podcast video end-to-end. Two AI hosts in a locked-off wide 2-shot conversing across a coffee table, cut into ~15s dialogue blocks and concatenated into a ~60s VSL or ad. Characters and set are defined as JSON specs; starting frames generated with Wavespeed gpt-image-2 (or Gemini Nano Banana 2 for 4K); clips generated with Seedance 2.0 text-to-video using the wide as a reference image; final cut optionally scanned by VidJutsu compliance and burned with a fine-print disclaimer. Use when the user wants a talking-head podcast-style AI ad, VSL, promotional clip, or UGC explainer with two hosts.",
-  "version": "1.0.0",
-  "author": {
-    "name": "AI Creative Lab"
-  }
-}

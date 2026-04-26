@@ -1,8 +1,0 @@
-{
-  "name": "generate-carousel",
-  "description": "Produce a multi-slide Instagram carousel end-to-end. Research a niche, identify the visual format pattern, design 3–10 slides as structured JSON specs, generate each slide with Wavespeed gpt-image-2 (typography baked in by the model — no separate overlay pass), host the PNGs on a public CDN, draft a caption, and publish or save as drafts via Zernio. Use when the user wants to ship a brand-style Instagram carousel — listicle, comparison, use-cases, hook-and-reveal, or any cover-plus-body-slide format.",
-  "version": "1.0.0",
-  "author": {
-    "name": "AI Creative Lab"
-  }
-}
