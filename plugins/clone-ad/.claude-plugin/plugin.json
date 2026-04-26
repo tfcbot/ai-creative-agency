@@ -1,0 +1,8 @@
+{
+  "name": "clone-ad",
+  "description": "Clone a winning ad end-to-end into a 15-second multi-shot AI video for your own product. Drop a reference ad URL (Meta Ad Library, TikTok, Instagram, YouTube) or a local MP4 plus a product description. Gemini analyzes the reference and extracts a structured shot list. Wavespeed Nano Banana 2 generates the product image. Wavespeed Seedance 2.0 produces the final 15s video with native audio in one image-to-video call. A verification loop compares the clone's shot density to the reference and re-runs if it's flat. Use when the user wants to clone a winning ad's pacing and structure for their own product without filming, editing, or hiring a creative agency.",
+  "version": "1.0.0",
+  "author": {
+    "name": "AI Creative Lab"
+  }
+}
