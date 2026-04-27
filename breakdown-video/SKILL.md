@@ -4,8 +4,8 @@ description: Break down a local MP4 into shot list, hook, and prompt JSON.
 requires:
   env:
     - GEMINI_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # breakdown-video

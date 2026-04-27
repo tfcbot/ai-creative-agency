@@ -4,8 +4,8 @@ description: Download the video MP4 from a social post URL via Scrape Creators.
 requires:
   env:
     - SCRAPE_CREATORS_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # download-post-video

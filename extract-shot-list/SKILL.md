@@ -4,8 +4,8 @@ description: Extract a JSON shot list from a video via frame-by-frame Gemini ana
 requires:
   env:
     - GEMINI_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # extract-shot-list

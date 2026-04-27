@@ -4,8 +4,8 @@ description: Bulk-fill TokPortal video slots from a CSV.
 requires:
   env:
     - TOKPORTAL_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # import-videos-csv

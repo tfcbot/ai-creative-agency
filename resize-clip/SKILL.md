@@ -1,8 +1,8 @@
 ---
 name: resize-clip
 description: Resize and crop a video to a target aspect ratio via local ffmpeg.
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # resize-clip

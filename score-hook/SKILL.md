@@ -4,8 +4,8 @@ description: Score the first 3 seconds of a video for hook strength.
 requires:
   env:
     - GEMINI_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # score-hook

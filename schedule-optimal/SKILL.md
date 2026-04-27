@@ -4,8 +4,8 @@ description: Schedule a post at Zernio's next optimal time slot.
 requires:
   env:
     - ZERNIO_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # schedule-optimal

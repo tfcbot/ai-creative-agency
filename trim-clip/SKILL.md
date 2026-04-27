@@ -1,8 +1,8 @@
 ---
 name: trim-clip
 description: Trim a video to in/out timestamps via local ffmpeg.
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # trim-clip

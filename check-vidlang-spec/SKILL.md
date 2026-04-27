@@ -4,8 +4,8 @@ description: Validate a VidLang spec via VidJutsu /v1/check.
 requires:
   env:
     - VIDJUTSU_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # check-vidlang-spec

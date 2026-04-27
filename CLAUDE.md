@@ -1,4 +1,4 @@
-# AI Creative Lab — repo-local guidance
+# AI Creative Agency — repo-local guidance
 
 This repo is a flat collection of Claude Code skills. Each top-level
 directory is one skill (one workflow, one finished use case).
@@ -40,8 +40,8 @@ requires:
   env:
     - WAVESPEED_API_KEY
     - VIDJUTSU_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 ```
 

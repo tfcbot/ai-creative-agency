@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# AI Creative Lab — post-install setup
+# AI Creative Agency — post-install setup
 # Validates skill structure and prints next-step prompt for the user.
 
 set -e
@@ -7,7 +7,7 @@ set -e
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$REPO_ROOT"
 
-echo "✓ AI Creative Lab installed at $REPO_ROOT"
+echo "✓ AI Creative Agency installed at $REPO_ROOT"
 echo ""
 
 # Find every top-level dir with a SKILL.md

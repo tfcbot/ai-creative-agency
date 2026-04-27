@@ -4,8 +4,8 @@ description: Define a one-page channel spec — character, handle, format, audie
 requires:
   env:
     - GEMINI_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # channel-spec

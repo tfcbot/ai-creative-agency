@@ -1,4 +1,4 @@
-# AI Creative Lab — Workflows
+# AI Creative Agency — Workflows
 
 Claude Code skills for AI video creation. Each skill is one
 end-to-end workflow that ships a finished output.
@@ -207,6 +207,6 @@ Each top-level directory is one skill. Inside each skill:
 See [`README.md`](README.md) for the install flow. Short version:
 
 ```
-git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-lab.git ~/.claude/skills/ai-creative-lab
-cd ~/.claude/skills/ai-creative-lab && ./setup
+git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-agency.git ~/.claude/skills/ai-creative-agency
+cd ~/.claude/skills/ai-creative-agency && ./setup
 ```

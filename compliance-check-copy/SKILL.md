@@ -4,8 +4,8 @@ description: Run a TOS compliance scan on caption/copy text via VidJutsu.
 requires:
   env:
     - VIDJUTSU_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # compliance-check-copy
