@@ -5,10 +5,11 @@ all of them before merging.
 
 ---
 
-## 1. Each skill ships a finished output in ≤5 minutes
+## 1. Each skill ships a finished output
 
-If a skill's happy-path can't produce a usable artifact in ~5 minutes
-of wall-clock time including provider calls, it's too big. Split it.
+A skill's happy-path produces one usable artifact end to end — not a
+fragment that requires another skill to be useful. If the work spans
+multiple end products, it's multiple skills.
 
 ## 2. Self-contained
 

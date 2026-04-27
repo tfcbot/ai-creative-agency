@@ -259,7 +259,7 @@ agent figures out the calls from each provider's `llms.txt`.
 ## Contributing
 
 Read [`ETHOS.md`](ETHOS.md) before adding a skill. The eight principles:
-≤5min finished output, self-contained, verb-first naming, locked
+finished-output atomicity, self-contained, verb-first naming, locked
 provider stack, cost transparency, key validation, output conventions,
 one-skill-per-release.
 
