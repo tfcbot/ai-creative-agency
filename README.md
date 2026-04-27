@@ -66,7 +66,7 @@ troubleshooting.
 | Agent | How |
 |---|---|
 | Claude Code | clone into `~/.claude/skills/ai-creative-agency/` |
-| Codex | `./setup --host codex` symlinks each skill into `~/.codex/skills/aca-<slug>/` |
+| Codex | `./setup --host codex` symlinks each skill into `~/.codex/skills/<slug>/` |
 | OpenClaw | spawns Claude Code via ACP — Claude install covers it |
 | Hermes | spawns Claude Code via ACP — Claude install covers it |
 
