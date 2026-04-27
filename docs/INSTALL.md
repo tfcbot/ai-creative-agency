@@ -20,13 +20,38 @@ future sessions know the skill commands. Setup takes ~30 seconds.
 - [Git](https://git-scm.com/)
 - A `bash`-compatible shell (default on macOS / Linux)
 
-## Other agents (Codex, OpenCode, Hermes, OpenClaw)
+## Codex
 
-Not supported yet. The `./setup` script only registers skills with
-Claude Code. The `SKILL.md` format itself is portable — agents that
-spawn Claude Code sessions (OpenClaw, Hermes) will pick up every skill
-once Claude Code is installed. Native install for Codex / OpenCode /
-Cursor is on the roadmap.
+Codex is supported via prefixed symlinks. After cloning the repo
+anywhere on disk, run:
+
+```bash
+./setup --host codex
+```
+
+This creates `~/.codex/skills/aca-<slug>/` symlinks for all 80 skills,
+each pointing at the corresponding source directory in the cloned repo.
+The `aca-` prefix avoids collisions with other skill packs you may have
+installed.
+
+Run `./setup` with no flag to auto-detect installed hosts (Claude Code
+and/or Codex) and register with each.
+
+Update with `cd <repo> && git pull` — symlinks pick up changes
+automatically.
+
+## OpenClaw and Hermes
+
+OpenClaw and Hermes spawn Claude Code sessions via ACP, so installing
+with `--host claude` (or `auto`) makes every skill available in those
+agents transparently. There is no separate setup.
+
+## Other agents
+
+OpenCode, Cursor, and Factory aren't supported by `./setup` yet. The
+`SKILL.md` format itself is portable, so manually symlinking each
+`<skill>/` directory into the agent's skills path will work in
+principle.
 
 ## Manual install
 
