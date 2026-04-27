@@ -89,6 +89,8 @@ registers with each. Use `--host <name>` to target one explicitly.
 ### Production
 
 - [`/clone-ad`](clone-ad/SKILL.md) — 15s AI clone of a reference ad for your product
+- [`/generate-video`](generate-video/SKILL.md) — one AI video from an idea (Seedance 2.0 / Kling 3.0 / Sora 2)
+- [`/generate-image`](generate-image/SKILL.md) — one AI image from an idea (Nano Banana 2 / GPT-Image 2)
 - [`/generate-carousel`](generate-carousel/SKILL.md) — 3–10 slide Instagram carousel
 - [`/wide-cam-podcast`](wide-cam-podcast/SKILL.md) — ~60s wide-cam two-host AI podcast clip
 - [`/generate-talking-head`](generate-talking-head/SKILL.md) — talking-head UGC clip from character + script

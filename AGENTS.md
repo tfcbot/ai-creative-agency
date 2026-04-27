@@ -13,6 +13,8 @@ end-to-end workflow that ships a finished output.
 | `/generate-carousel` | 3–10 slide Instagram carousel. Niche research, format pattern detection, slide JSON specs, single-pass image generation (Wavespeed gpt-image-2) with typography baked in, caption draft, publish or save as drafts (Zernio). |
 | `/wide-cam-podcast` | ~60-second wide-cam two-host AI podcast clip. Characters and set defined as JSON, starting frames generated (Wavespeed gpt-image-2 or Nano Banana 2), clips generated (Seedance 2.0), optional VidJutsu compliance scan, fine-print disclaimer burn. |
 | `/generate-talking-head` | Talking-head UGC clip from a character spec and a script — start frame (Nano Banana 2), voiceover (ElevenLabs), lip-synced clip (Kling). |
+| `/generate-video` | One AI video from an idea. Refines the prompt, picks the model (Seedance 2.0 / Kling 3.0 / Sora 2), generates the MP4 via Wavespeed. |
+| `/generate-image` | One AI image from an idea. Refines the prompt, picks the model (Nano Banana 2 / GPT-Image 2), generates the PNG via Wavespeed. |
 
 ### Research & intelligence
 
