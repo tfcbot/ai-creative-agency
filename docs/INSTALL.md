@@ -4,7 +4,13 @@
 
 Open Claude Code in any project and paste this:
 
-> Install AI Creative Agency: run `git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-agency.git ~/.claude/skills/ai-creative-agency && cd ~/.claude/skills/ai-creative-agency && ./setup`, then add an "AI Creative Agency" section to CLAUDE.md listing the available skills: /clone-ad, /generate-carousel, /wide-cam-podcast.
+```text
+Install AI Creative Agency:
+
+git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-agency.git ~/.claude/skills/ai-creative-agency && cd ~/.claude/skills/ai-creative-agency && ./setup
+
+Then read ~/.claude/skills/ai-creative-agency/AGENTS.md, ask me what I'm working on, and add an "AI Creative Agency" section to my CLAUDE.md listing only the slash commands relevant to that work. Finish by asking which providers I want to wire up first so we only set up the keys actually needed.
+```
 
 Claude clones the repo, runs `setup`, and edits your `CLAUDE.md` so
 future sessions know the skill commands. Setup takes ~30 seconds.
@@ -14,19 +20,13 @@ future sessions know the skill commands. Setup takes ~30 seconds.
 - [Git](https://git-scm.com/)
 - A `bash`-compatible shell (default on macOS / Linux)
 
-## Cross-agent (Cursor, Codex, OpenCode, etc.)
+## Other agents (Codex, OpenCode, Hermes, OpenClaw)
 
-Each skill is a plain `SKILL.md` plus its `recipes/` and `references/`
-directories. Any AI agent that supports filesystem-discovered skills
-can use them. Install via the [vercel-labs skills CLI](https://github.com/vercel-labs/skills):
-
-```bash
-npx skills add tfcbot/ai-creative-agency
-```
-
-This copies every skill into the agent's local skills directory and
-exposes them as flat slash commands (`/clone-ad`, `/generate-carousel`,
-`/wide-cam-podcast`).
+Not supported yet. The `./setup` script only registers skills with
+Claude Code. The `SKILL.md` format itself is portable — agents that
+spawn Claude Code sessions (OpenClaw, Hermes) will pick up every skill
+once Claude Code is installed. Native install for Codex / OpenCode /
+Cursor is on the roadmap.
 
 ## Manual install
 

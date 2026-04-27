@@ -58,16 +58,14 @@ cp ~/.claude/skills/ai-creative-agency/.env.example ./.env
 See the provider table further down for signup links and what each one
 covers.
 
-### Step 3: Cross-agent install (optional)
-
-Same skills, different agents (Cursor, Codex, OpenCode):
-
-```bash
-npx skills add tfcbot/ai-creative-agency
-```
-
 See [`docs/INSTALL.md`](docs/INSTALL.md) for manual install and
 troubleshooting.
+
+> **Other agents (Codex, OpenCode, Hermes, OpenClaw)** — not supported
+> yet. The skills are plain markdown so they're portable in principle,
+> but the `./setup` script currently only registers them with Claude
+> Code. Multi-host install is on the roadmap; track progress in the
+> repo issues.
 
 ## Skill catalog
 
