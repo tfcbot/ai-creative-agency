@@ -1,31 +1,14 @@
 # AI Creative Agency
 
-**An AI creative agency in your terminal.** Every task a social media
-marketing agency runs — research, production, editing, publishing,
-compliance, paid ads — packaged as Claude Code skills you run yourself.
+**An AI creative agency in your terminal.** Researches niches and
+trends, produces AI videos and carousels, clones winning ads, edits
+captions and overlays, schedules and engages across 14 social
+platforms, runs paid campaigns, and reports back — all packaged as
+Claude Code skills your agent runs for you.
 
-Built for the operator running AI content for clients across organic,
-paid, theme pages, and clipping. The toolkit empowers you to do
-agency-grade work; it doesn't replace people.
-
-Eighty skills across nine provider lanes. BYOK, atomic, single-account,
-single-task — chain them yourself or let an agent orchestrate.
-
-## Quick start
-
-1. Install AI Creative Agency (30 seconds — see below)
-2. Copy `.env.example` to `.env` in your working directory and fill in
-   the keys for the providers you want to use — start with one
-3. Pick a starter skill that only needs one provider:
-   - [`/research-niche`](research-niche/SKILL.md) (Scrape Creators + Gemini) — see what's working in any niche
-   - [`/transcribe-video`](transcribe-video/SKILL.md) (VidJutsu) — word-level transcript of any video
-   - [`/clone-ad`](clone-ad/SKILL.md) (Wavespeed + Gemini + Scrape Creators) — clone a winning ad end to end
-4. Run the skill in Claude Code: type the slash command and answer the
-   questions
-5. Inspect the output dir — every skill drops its work into
-   `CWD/<skill>-<timestamp>/` so nothing gets overwritten
-
-Stop there. You'll know if this is for you.
+Built for the operator running AI content across brand, organic, paid,
+theme pages, and clipping. Eighty skills across nine provider lanes.
+BYOK, atomic, single-account, single-task.
 
 ## Install — 30 seconds
 
