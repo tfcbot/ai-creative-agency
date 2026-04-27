@@ -203,30 +203,42 @@ merge.
 A TokPortal-provisioned account never becomes a Zernio-connected account.
 Same content can ship to both lanes; each lane is operated independently.
 
-## Configure
+## Environment variables
 
-Skills require provider API keys. Copy `.env.example` to `.env` in your
-project working directory and fill in the keys you need.
+Skills are BYOK — bring your own keys. Copy `.env.example` to `.env` in
+your project working directory and fill in the keys for the providers
+you actually use. You can install with zero keys and add them as you
+reach for skills; each skill validates its required keys before any
+provider call and stops gracefully with the signup link if something
+is missing — no partial runs that burn credits.
 
-| Provider | What it does | Used by |
+```bash
+cp ~/.claude/skills/ai-creative-agency/.env.example ./.env
+```
+
+| Variable | Provider | What it unlocks |
 |---|---|---|
-| [Wavespeed](https://wavespeed.ai) | Video + image generation | Production, editing |
-| [VidJutsu](https://vidjutsu.ai) | Visual QA, compliance, transcribe, overlay, CDN | Analysis, compliance, editing |
-| [Scrape Creators](https://scrapecreators.com) | Reference + research fetching | Research, analysis, clipping |
-| [Zernio](https://zernio.com) | Publishing, engagement, paid ads, analytics | Connected-account lane |
-| [TokPortal](https://tokportal.com) | Managed account provisioning + slot posting | Managed-account lane |
-| [ElevenLabs](https://elevenlabs.io) | TTS, voice clone, speech-to-speech | Voice, production |
-| [Captions.ai (Mirage)](https://captions.ai) | Animated captions | Editing |
-| [Gemini](https://ai.google.dev) | Video analysis, prompt synthesis | Throughout |
-| `ffmpeg` (local) | Concat, trim, resize, frame extract | Editing, clipping |
+| `WAVESPEED_API_KEY` | [Wavespeed](https://wavespeed.ai) | Video + image generation (Seedance 2.0, Nano Banana 2, gpt-image-2, Kling) — production and editing skills |
+| `VIDJUTSU_API_KEY` | [VidJutsu](https://vidjutsu.ai) | Visual QA, compliance, transcribe, overlay/disclaimer burn, CDN — analysis, compliance, editing skills |
+| `SCRAPE_CREATORS_API_KEY` | [Scrape Creators](https://scrapecreators.com) | Reference + research fetching across TikTok, IG, YouTube, X, Reddit, Pinterest, ad libraries — research, analysis, clipping skills |
+| `ZERNIO_API_KEY` | [Zernio](https://zernio.com) | Publishing (14 platforms), engagement, paid ads, analytics, audiences — connected-account lane |
+| `TOKPORTAL_API_KEY` | [TokPortal](https://tokportal.com) | Managed account provisioning, warming, slot-based posting — managed-account lane |
+| `ELEVENLABS_API_KEY` | [ElevenLabs](https://elevenlabs.io) | TTS, voice clone, speech-to-speech — voice and production skills |
+| `CAPTIONS_API_KEY` | [Captions.ai (Mirage)](https://captions.ai) | Animated captions burn — `add-captions` |
+| `GEMINI_API_KEY` | [Gemini](https://ai.google.dev) | Video analysis, prompt synthesis, structured outputs — used throughout |
+| _(none)_ | `ffmpeg` (local) | Concat, trim, resize, frame extract — install via `brew install ffmpeg` |
 
-Each skill validates its keys before any provider call. Missing keys
-stop the run gracefully with a signup link — no partial runs that burn
-credits. Each skill's SKILL.md links the relevant `llms.txt` so the
-agent fetches the current API surface at runtime.
+**Where to put `.env`** — in the working directory you're running the
+skill from, *not* in the cloned repo. The repo is shared across
+projects; `.env` is per-project so different brands or clients can use
+different keys.
+
+Each skill's `SKILL.md` declares which env vars it needs in frontmatter
+and links the relevant `llms.txt` so the agent can fetch the current
+API surface at runtime.
 
 See [`docs/PROVIDERS.md`](docs/PROVIDERS.md) for full signup links,
-expected costs, and `llms.txt` URLs.
+expected costs per call, and `llms.txt` URLs.
 
 ## Layout
 
