@@ -1,4 +1,4 @@
-# AI Creative Lab
+# AI Creative Agency
 
 **An AI creative agency in your terminal.** Every task a social media
 marketing agency runs — research, production, editing, publishing,
@@ -13,7 +13,7 @@ single-task — chain them yourself or let an agent orchestrate.
 
 ## Quick start
 
-1. Install AI Creative Lab (30 seconds — see below)
+1. Install AI Creative Agency (30 seconds — see below)
 2. Copy `.env.example` to `.env` in your working directory and fill in
    the keys for the providers you want to use — start with one
 3. Pick a starter skill that only needs one provider:
@@ -36,11 +36,11 @@ Stop there. You'll know if this is for you.
 Open Claude Code and paste this. Claude does the rest.
 
 ```text
-Install AI Creative Lab:
+Install AI Creative Agency:
 
-git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-lab.git ~/.claude/skills/ai-creative-lab && cd ~/.claude/skills/ai-creative-lab && ./setup
+git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-agency.git ~/.claude/skills/ai-creative-agency && cd ~/.claude/skills/ai-creative-agency && ./setup
 
-Then read ~/.claude/skills/ai-creative-lab/AGENTS.md, ask me what I'm working on, and add an "AI Creative Lab" section to my CLAUDE.md listing only the slash commands relevant to that work. Finish by asking which providers I want to wire up first so we only set up the keys actually needed.
+Then read ~/.claude/skills/ai-creative-agency/AGENTS.md, ask me what I'm working on, and add an "AI Creative Agency" section to my CLAUDE.md listing only the slash commands relevant to that work. Finish by asking which providers I want to wire up first so we only set up the keys actually needed.
 ```
 
 ### Step 2: Set up your provider keys
@@ -52,7 +52,7 @@ something is missing — you can install the repo with no keys, then add
 them as you reach for skills.
 
 ```bash
-cp ~/.claude/skills/ai-creative-lab/.env.example ./.env
+cp ~/.claude/skills/ai-creative-agency/.env.example ./.env
 ```
 
 See the provider table further down for signup links and what each one
@@ -63,7 +63,7 @@ covers.
 Same skills, different agents (Cursor, Codex, OpenCode):
 
 ```bash
-npx skills add tfcbot/ai-creative-lab
+npx skills add tfcbot/ai-creative-agency
 ```
 
 See [`docs/INSTALL.md`](docs/INSTALL.md) for manual install and

@@ -4,8 +4,8 @@ description: Draft a caption for a video by niche via Gemini.
 requires:
   env:
     - GEMINI_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # draft-caption

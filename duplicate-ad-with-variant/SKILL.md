@@ -4,8 +4,8 @@ description: Duplicate an ad and swap in a new creative variant via Zernio.
 requires:
   env:
     - ZERNIO_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # duplicate-ad-with-variant

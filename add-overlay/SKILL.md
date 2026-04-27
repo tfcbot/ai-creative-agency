@@ -4,8 +4,8 @@ description: Burn a text overlay onto a video via VidJutsu /v1/overlay.
 requires:
   env:
     - VIDJUTSU_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # add-overlay

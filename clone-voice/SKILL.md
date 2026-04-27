@@ -4,8 +4,8 @@ description: Clone a voice from a sample via ElevenLabs and return a voice ID.
 requires:
   env:
     - ELEVENLABS_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # clone-voice

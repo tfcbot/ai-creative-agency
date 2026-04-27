@@ -4,8 +4,8 @@ description: Swap the voice in a video to a target voice via ElevenLabs STS.
 requires:
   env:
     - ELEVENLABS_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # swap-voice

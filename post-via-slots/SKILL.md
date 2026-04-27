@@ -4,8 +4,8 @@ description: Publish to a TokPortal-managed account via the slot model.
 requires:
   env:
     - TOKPORTAL_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # post-via-slots

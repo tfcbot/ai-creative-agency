@@ -4,8 +4,8 @@ description: Download a YouTube video by URL or ID via Scrape Creators.
 requires:
   env:
     - SCRAPE_CREATORS_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # download-youtube-video

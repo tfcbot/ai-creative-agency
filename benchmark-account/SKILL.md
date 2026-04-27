@@ -4,8 +4,8 @@ description: Side-by-side benchmark — your handle vs. a list of competitors.
 requires:
   env:
     - SCRAPE_CREATORS_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # benchmark-account

@@ -4,8 +4,8 @@ description: Upload a PII customer list to a custom audience (server-hashed).
 requires:
   env:
     - ZERNIO_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # upload-customer-list

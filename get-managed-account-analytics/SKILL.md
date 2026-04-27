@@ -4,8 +4,8 @@ description: Pull account + per-video analytics for a TokPortal-managed account.
 requires:
   env:
     - TOKPORTAL_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # get-managed-account-analytics

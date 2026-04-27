@@ -1,4 +1,4 @@
-# AI Creative Lab Ethos
+# AI Creative Agency Ethos
 
 Principles every skill in this repo follows. New skills must satisfy
 all of them before merging.

@@ -4,8 +4,8 @@ description: Burn an FTC fine-print disclaimer onto a video via VidJutsu /v1/dis
 requires:
   env:
     - VIDJUTSU_API_KEY
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # add-disclaimer

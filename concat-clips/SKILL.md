@@ -1,8 +1,8 @@
 ---
 name: concat-clips
 description: Concatenate a list of clips into one MP4 via local ffmpeg.
-homepage: https://github.com/tfcbot/ai-creative-lab
-source: https://github.com/tfcbot/ai-creative-lab
+homepage: https://github.com/tfcbot/ai-creative-agency
+source: https://github.com/tfcbot/ai-creative-agency
 ---
 
 # concat-clips
