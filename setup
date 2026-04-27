@@ -89,18 +89,47 @@ if [ ${#SKILLS[@]} -eq 0 ]; then
   exit 1
 fi
 
-# ─── Claude Code: validate-only ───────────────────────────────
-# Claude Code scans ~/.claude/skills/ recursively, so a clone at
-# ~/.claude/skills/ai-creative-agency/ is already discoverable. Nothing
-# to symlink — just confirm the install path is sane.
+# ─── Claude Code: one symlink per skill ───────────────────────
+# Claude Code CLI traverses nested dirs, but Claude Code Desktop only
+# discovers top-level entries under ~/.claude/skills/. Symlinking each
+# bundled skill up one level supports both — Desktop sees the symlinks,
+# CLI dedupes by frontmatter name: so the skill appears once either way.
+# Skip-if-exists protects entries owned by other skill packs.
 if [ "$INSTALL_CLAUDE" -eq 1 ]; then
+  CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
   case "$REPO_ROOT" in
-    "$HOME/.claude/skills/"*)
-      log "✓ Claude Code: ${#SKILLS[@]} skills available at $REPO_ROOT" ;;
+    "$CLAUDE_SKILLS_DIR/"*)
+      mkdir -p "$CLAUDE_SKILLS_DIR"
+      linked=0
+      skipped=()
+      for skill in "${SKILLS[@]}"; do
+        target="$CLAUDE_SKILLS_DIR/$skill"
+        if [ -e "$target" ] && [ ! -L "$target" ]; then
+          skipped+=("$skill (real dir exists)")
+          continue
+        fi
+        if [ -L "$target" ]; then
+          link_dest="$(readlink "$target" 2>/dev/null || true)"
+          if [ "$link_dest" != "$REPO_ROOT/$skill" ] && [ "$link_dest" != "ai-creative-agency/$skill" ]; then
+            skipped+=("$skill (symlink to $link_dest)")
+            continue
+          fi
+        fi
+        # Use a relative target so the symlink stays portable if the
+        # parent dir is later moved/renamed by the user.
+        ln -snf "ai-creative-agency/$skill" "$target"
+        linked=$((linked + 1))
+      done
+      log "✓ Claude Code: linked $linked skills into $CLAUDE_SKILLS_DIR/"
+      if [ ${#skipped[@]} -gt 0 ]; then
+        log "  skipped (name conflicts with existing entries):"
+        for s in "${skipped[@]}"; do log "    - $s"; done
+      fi
+      ;;
     *)
       log "✓ Claude Code: ${#SKILLS[@]} skills found at $REPO_ROOT"
-      log "  note: repo is outside ~/.claude/skills/ — for Claude Code to discover the skills, either"
-      log "        clone there directly or symlink: ln -s \"$REPO_ROOT\" ~/.claude/skills/ai-creative-agency"
+      log "  note: repo is outside ~/.claude/skills/ — clone there directly to enable Desktop discovery,"
+      log "        or symlink the repo: ln -s \"$REPO_ROOT\" ~/.claude/skills/ai-creative-agency, then re-run ./setup"
       ;;
   esac
 fi

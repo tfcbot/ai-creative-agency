@@ -15,6 +15,13 @@ Then read ~/.claude/skills/ai-creative-agency/AGENTS.md, ask me what I'm working
 Claude clones the repo, runs `setup`, and edits your `CLAUDE.md` so
 future sessions know the skill commands. Setup takes ~30 seconds.
 
+`./setup` symlinks each bundled skill up to the top of
+`~/.claude/skills/` so both Claude Code CLI and Claude Code Desktop
+discover them — Desktop only sees top-level entries, CLI dedupes by
+frontmatter `name:` so the skill appears once either way. Existing
+top-level entries owned by other skill packs are skipped, never
+overwritten.
+
 **Requirements:**
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 - [Git](https://git-scm.com/)

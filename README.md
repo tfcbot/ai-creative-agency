@@ -16,9 +16,9 @@ BYOK, atomic, single-account, single-task.
 
 ### Step 1: Install on your machine
 
-#### Claude Code (CLI)
-
-Open Claude Code in your terminal and paste this. Claude does the rest.
+Open Claude Code (CLI or Desktop) and paste this. `./setup` exposes
+every bundled skill at the top of `~/.claude/skills/` so both Claude
+Code variants discover them.
 
 ```text
 Install AI Creative Agency:
@@ -26,34 +26,6 @@ Install AI Creative Agency:
 git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-agency.git ~/.claude/skills/ai-creative-agency && cd ~/.claude/skills/ai-creative-agency && ./setup
 
 Then read ~/.claude/skills/ai-creative-agency/AGENTS.md, ask me what I'm working on, and add an "AI Creative Agency" section to my CLAUDE.md listing only the slash commands relevant to that work. Finish by asking which providers I want to wire up first so we only set up the keys actually needed.
-```
-
-#### Claude Code (Desktop)
-
-Claude Code Desktop only discovers skills as top-level directories
-under `~/.claude/skills/`, so an extra symlink step is needed to expose
-each bundled skill. Paste this:
-
-```text
-Install AI Creative Agency:
-
-git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-agency.git ~/.claude/skills/ai-creative-agency && cd ~/.claude/skills/ai-creative-agency && ./setup
-
-Claude Code only discovers skills as top-level directories under
-~/.claude/skills/, so expose each bundled skill by symlinking it up one
-level (non-destructive, keeps the bundle intact):
-
-cd ~/.claude/skills && for d in ai-creative-agency/*/; do
-  name=$(basename "$d")
-  [ -e "$name" ] && continue
-  [ -f "$d/SKILL.md" ] && ln -s "ai-creative-agency/$name" "$name"
-done
-
-Then read ~/.claude/skills/ai-creative-agency/AGENTS.md, ask me what I'm
-working on, and add an "AI Creative Agency" section to my CLAUDE.md
-listing only the slash commands relevant to that work. Finish by asking
-which providers I want to wire up first so we only set up the keys
-actually needed.
 ```
 
 ### Step 2: Set up your provider keys
