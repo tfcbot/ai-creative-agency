@@ -61,11 +61,18 @@ covers.
 See [`docs/INSTALL.md`](docs/INSTALL.md) for manual install and
 troubleshooting.
 
-> **Other agents (Codex, OpenCode, Hermes, OpenClaw)** — not supported
-> yet. The skills are plain markdown so they're portable in principle,
-> but the `./setup` script currently only registers them with Claude
-> Code. Multi-host install is on the roadmap; track progress in the
-> repo issues.
+### Other agents
+
+| Agent | Supported | How |
+|---|---|---|
+| Claude Code | ✅ | clone into `~/.claude/skills/ai-creative-agency/` |
+| Codex | ✅ | `./setup --host codex` symlinks each skill into `~/.codex/skills/aca-<slug>/` |
+| OpenClaw | ✅ via Claude | spawns Claude Code via ACP — Claude install covers it |
+| Hermes | ✅ via Claude | spawns Claude Code via ACP — Claude install covers it |
+| OpenCode / Cursor / Factory | ❌ not yet | on the roadmap |
+
+`./setup` with no flag auto-detects which hosts are installed and
+registers with each. Use `--host <name>` to target one explicitly.
 
 ## Skill catalog
 

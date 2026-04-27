@@ -1,41 +1,159 @@
 #!/usr/bin/env bash
 # AI Creative Agency — post-install setup
-# Validates skill structure and prints next-step prompt for the user.
+# Registers skills with Claude Code and/or Codex.
 
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$REPO_ROOT"
 
-echo "✓ AI Creative Agency installed at $REPO_ROOT"
-echo ""
+# ─── Flags ────────────────────────────────────────────────────
+HOST="auto"
+PREFIX="aca-"
+QUIET=0
 
-# Find every top-level dir with a SKILL.md
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --host) [ -z "$2" ] && { echo "Missing value for --host (expected claude, codex, or auto)" >&2; exit 1; }; HOST="$2"; shift 2 ;;
+    --host=*) HOST="${1#--host=}"; shift ;;
+    --prefix) [ -z "$2" ] && { echo "Missing value for --prefix" >&2; exit 1; }; PREFIX="$2"; shift 2 ;;
+    --prefix=*) PREFIX="${1#--prefix=}"; shift ;;
+    -q|--quiet) QUIET=1; shift ;;
+    -h|--help)
+      cat <<EOF
+AI Creative Agency setup
+
+Usage: ./setup [--host <name>] [--prefix <prefix>] [--quiet]
+
+Hosts:
+  claude     Register with Claude Code (~/.claude/skills/)
+  codex      Register with Codex (~/.codex/skills/) using prefixed symlinks
+  auto       (default) Detect installed hosts and register with each
+  openclaw   ACP-based — inherits Claude Code install (no separate setup)
+  hermes     ACP-based — inherits Claude Code install (no separate setup)
+
+Options:
+  --prefix <p>   Symlink prefix for Codex skills (default: aca-)
+  --quiet        Suppress non-error output
+  --help         Show this help
+EOF
+      exit 0 ;;
+    *) shift ;;
+  esac
+done
+
+log() { [ "$QUIET" -eq 0 ] && echo "$@" || true; }
+
+# ─── Validate host ────────────────────────────────────────────
+case "$HOST" in
+  claude|codex|auto) ;;
+  openclaw|hermes)
+    cat <<EOF
+
+$HOST integration uses a different model — $HOST spawns Claude Code sessions
+via ACP, so installing with --host claude (or auto) makes every skill
+available in $HOST transparently. No separate $HOST setup is required.
+
+EOF
+    exit 0 ;;
+  *) echo "Unknown --host: $HOST (expected claude, codex, auto, openclaw, or hermes)" >&2; exit 1 ;;
+esac
+
+# ─── Detect hosts ─────────────────────────────────────────────
+INSTALL_CLAUDE=0
+INSTALL_CODEX=0
+
+if [ "$HOST" = "auto" ]; then
+  [ -d "$HOME/.claude" ] && INSTALL_CLAUDE=1
+  [ -d "$HOME/.codex" ] && INSTALL_CODEX=1
+  if [ "$INSTALL_CLAUDE" -eq 0 ] && [ "$INSTALL_CODEX" -eq 0 ]; then
+    echo "No supported host detected (looked for ~/.claude or ~/.codex)." >&2
+    echo "Install Claude Code or Codex first, then re-run ./setup." >&2
+    exit 1
+  fi
+elif [ "$HOST" = "claude" ]; then
+  INSTALL_CLAUDE=1
+elif [ "$HOST" = "codex" ]; then
+  INSTALL_CODEX=1
+fi
+
+# ─── Discover skills ──────────────────────────────────────────
 SKILLS=()
 for dir in */; do
   dir="${dir%/}"
   case "$dir" in
-    docs|lib|scripts|test|examples|node_modules|.git) continue ;;
+    docs|lib|scripts|test|examples|node_modules|.git|.github|.claude|.agents) continue ;;
   esac
-  if [ -f "$dir/SKILL.md" ]; then
-    SKILLS+=("$dir")
-  fi
+  [ -f "$dir/SKILL.md" ] && SKILLS+=("$dir")
 done
 
 if [ ${#SKILLS[@]} -eq 0 ]; then
-  echo "⚠  No SKILL.md files found at the top level."
-  echo "   Expected layout: <skill-name>/SKILL.md"
+  echo "⚠  No SKILL.md files found at the top level." >&2
+  echo "   Expected layout: <skill-name>/SKILL.md" >&2
   exit 1
 fi
 
-echo "Available skills:"
-for skill in "${SKILLS[@]}"; do
-  # Extract description from frontmatter (first line starting with description:)
-  desc=$(awk '/^description:/{sub(/^description: */,""); print; exit}' "$skill/SKILL.md")
-  printf "  /%-20s — %s\n" "$skill" "$desc"
-done
+# ─── Claude Code: validate-only ───────────────────────────────
+# Claude Code scans ~/.claude/skills/ recursively, so a clone at
+# ~/.claude/skills/ai-creative-agency/ is already discoverable. Nothing
+# to symlink — just confirm the install path is sane.
+if [ "$INSTALL_CLAUDE" -eq 1 ]; then
+  case "$REPO_ROOT" in
+    "$HOME/.claude/skills/"*)
+      log "✓ Claude Code: ${#SKILLS[@]} skills available at $REPO_ROOT" ;;
+    *)
+      log "✓ Claude Code: ${#SKILLS[@]} skills found at $REPO_ROOT"
+      log "  note: repo is outside ~/.claude/skills/ — for Claude Code to discover the skills, either"
+      log "        clone there directly or symlink: ln -s \"$REPO_ROOT\" ~/.claude/skills/ai-creative-agency"
+      ;;
+  esac
+fi
 
-echo ""
-echo "Set provider API keys before running. See docs/PROVIDERS.md."
-echo ""
-echo "Run a skill in Claude Code with its slash command (e.g. /${SKILLS[0]})."
+# ─── Codex: flat symlinks with prefix ─────────────────────────
+# Codex scans ~/.codex/skills/ for top-level skill directories. We link
+# each skill as ~/.codex/skills/<prefix><slug>/ → <repo>/<slug>/. The
+# prefix prevents collisions with other skill packs the user has
+# installed.
+if [ "$INSTALL_CODEX" -eq 1 ]; then
+  CODEX_SKILLS_DIR="$HOME/.codex/skills"
+  mkdir -p "$CODEX_SKILLS_DIR"
+
+  # Clean up stale prefixed symlinks pointing at this repo
+  if [ -d "$CODEX_SKILLS_DIR" ]; then
+    for entry in "$CODEX_SKILLS_DIR"/${PREFIX}*; do
+      [ -e "$entry" ] || continue
+      if [ -L "$entry" ]; then
+        link_dest="$(readlink "$entry" 2>/dev/null || true)"
+        case "$link_dest" in
+          "$REPO_ROOT"/*) rm -f "$entry" ;;
+        esac
+      fi
+    done
+  fi
+
+  linked=0
+  for skill in "${SKILLS[@]}"; do
+    target="$CODEX_SKILLS_DIR/${PREFIX}${skill}"
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+      log "  warning: $target exists and is not a symlink — skipping"
+      continue
+    fi
+    ln -snf "$REPO_ROOT/$skill" "$target"
+    linked=$((linked + 1))
+  done
+  log "✓ Codex: linked $linked skills into $CODEX_SKILLS_DIR/${PREFIX}*"
+fi
+
+# ─── Summary ──────────────────────────────────────────────────
+log ""
+log "Sample skills:"
+count=0
+for skill in "${SKILLS[@]}"; do
+  desc=$(awk '/^description:/{sub(/^description: */,""); print; exit}' "$skill/SKILL.md")
+  printf "  /%-22s — %s\n" "$skill" "$desc"
+  count=$((count + 1))
+  [ "$count" -ge 8 ] && break
+done
+log "  ... (${#SKILLS[@]} total — see AGENTS.md for the full catalog)"
+log ""
+log "Set provider API keys before running. See docs/PROVIDERS.md."
