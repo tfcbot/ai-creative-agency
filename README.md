@@ -35,7 +35,13 @@ Stop there. You'll know if this is for you.
 
 Open Claude Code and paste this. Claude does the rest.
 
-> Install AI Creative Lab: run **`git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-lab.git ~/.claude/skills/ai-creative-lab && cd ~/.claude/skills/ai-creative-lab && ./setup`**, then add an "AI Creative Lab" section to CLAUDE.md listing the skills you plan to use from /clone-ad, /generate-carousel, /wide-cam-podcast, /generate-talking-head, /research-niche, /research-trends, /research-creator, /research-hooks, /scan-outliers, /benchmark-account, /research-ads-meta, /research-ads-tiktok, /breakdown-social-post, /breakdown-video, /extract-hook, /extract-shot-list, /extract-caption-pattern, /transcribe-video, /score-thumbnail, /score-hook, /clone-voice, /swap-voice, /add-captions, /add-overlay, /add-disclaimer, /concat-clips, /trim-clip, /resize-clip, /extract-frame, /extend-clip, /create-instagram-page, /create-tiktok-page, /create-youtube-channel, /warm-account, /deep-warm-account, /configure-managed-account, /get-managed-account-analytics, /connect-account, /audit-account-health, /post-via-slots, /schedule-via-slots, /import-videos-csv, /publish-post, /schedule-posts, /schedule-optimal, /draft-caption, /draft-hashtags, /get-comments, /reply-comments, /send-dm, /setup-comment-dm-funnel, /run-dm-sequence, /compliance-check, /compliance-check-copy, /audit-claims, /check-vidlang-spec, /create-ads, /duplicate-ad-with-variant, /pause-ads, /get-ad-performance, /ads-performance-report, /diagnose-ads-account, /create-custom-audience, /upload-customer-list, /create-lookalike, /send-conversion-event, /pull-analytics, /weekly-report, /diagnose-flop, /iterate-on-winners, /clip-performance-report, /follower-history, /channel-spec, /content-calendar, /awareness-ladder, /download-post-video, /download-post, /download-youtube-video, /cut-clip, /find-clip-moments. Then ask the user which providers they want to wire up first so we only set up the keys that are actually needed.
+```text
+Install AI Creative Lab:
+
+git clone --single-branch --depth 1 https://github.com/tfcbot/ai-creative-lab.git ~/.claude/skills/ai-creative-lab && cd ~/.claude/skills/ai-creative-lab && ./setup
+
+Then read ~/.claude/skills/ai-creative-lab/AGENTS.md, ask me what I'm working on, and add an "AI Creative Lab" section to my CLAUDE.md listing only the slash commands relevant to that work. Finish by asking which providers I want to wire up first so we only set up the keys actually needed.
+```
 
 ### Step 2: Set up your provider keys
 
