@@ -9,31 +9,27 @@ cd "$REPO_ROOT"
 
 # ─── Flags ────────────────────────────────────────────────────
 HOST="auto"
-PREFIX="aca-"
 QUIET=0
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --host) [ -z "$2" ] && { echo "Missing value for --host (expected claude, codex, or auto)" >&2; exit 1; }; HOST="$2"; shift 2 ;;
     --host=*) HOST="${1#--host=}"; shift ;;
-    --prefix) [ -z "$2" ] && { echo "Missing value for --prefix" >&2; exit 1; }; PREFIX="$2"; shift 2 ;;
-    --prefix=*) PREFIX="${1#--prefix=}"; shift ;;
     -q|--quiet) QUIET=1; shift ;;
     -h|--help)
       cat <<EOF
 AI Creative Agency setup
 
-Usage: ./setup [--host <name>] [--prefix <prefix>] [--quiet]
+Usage: ./setup [--host <name>] [--quiet]
 
 Hosts:
   claude     Register with Claude Code (~/.claude/skills/)
-  codex      Register with Codex (~/.codex/skills/) using prefixed symlinks
+  codex      Register with Codex (~/.codex/skills/) — one symlink per skill
   auto       (default) Detect installed hosts and register with each
   openclaw   ACP-based — inherits Claude Code install (no separate setup)
   hermes     ACP-based — inherits Claude Code install (no separate setup)
 
 Options:
-  --prefix <p>   Symlink prefix for Codex skills (default: aca-)
   --quiet        Suppress non-error output
   --help         Show this help
 EOF
@@ -109,18 +105,17 @@ if [ "$INSTALL_CLAUDE" -eq 1 ]; then
   esac
 fi
 
-# ─── Codex: flat symlinks with prefix ─────────────────────────
+# ─── Codex: one symlink per skill ─────────────────────────────
 # Codex scans ~/.codex/skills/ for top-level skill directories. We link
-# each skill as ~/.codex/skills/<prefix><slug>/ → <repo>/<slug>/. The
-# prefix prevents collisions with other skill packs the user has
-# installed.
+# each skill as ~/.codex/skills/<slug>/ → <repo>/<slug>/. Slash commands
+# match the README catalog (e.g. /research-niche).
 if [ "$INSTALL_CODEX" -eq 1 ]; then
   CODEX_SKILLS_DIR="$HOME/.codex/skills"
   mkdir -p "$CODEX_SKILLS_DIR"
 
-  # Clean up stale prefixed symlinks pointing at this repo
+  # Clean up stale aca-* symlinks from earlier prefixed installs
   if [ -d "$CODEX_SKILLS_DIR" ]; then
-    for entry in "$CODEX_SKILLS_DIR"/${PREFIX}*; do
+    for entry in "$CODEX_SKILLS_DIR"/aca-*; do
       [ -e "$entry" ] || continue
       if [ -L "$entry" ]; then
         link_dest="$(readlink "$entry" 2>/dev/null || true)"
@@ -132,16 +127,28 @@ if [ "$INSTALL_CODEX" -eq 1 ]; then
   fi
 
   linked=0
+  skipped=()
   for skill in "${SKILLS[@]}"; do
-    target="$CODEX_SKILLS_DIR/${PREFIX}${skill}"
+    target="$CODEX_SKILLS_DIR/$skill"
     if [ -e "$target" ] && [ ! -L "$target" ]; then
-      log "  warning: $target exists and is not a symlink — skipping"
+      skipped+=("$skill (real dir exists)")
       continue
+    fi
+    if [ -L "$target" ]; then
+      link_dest="$(readlink "$target" 2>/dev/null || true)"
+      if [ "$link_dest" != "$REPO_ROOT/$skill" ]; then
+        skipped+=("$skill (symlink to $link_dest)")
+        continue
+      fi
     fi
     ln -snf "$REPO_ROOT/$skill" "$target"
     linked=$((linked + 1))
   done
-  log "✓ Codex: linked $linked skills into $CODEX_SKILLS_DIR/${PREFIX}*"
+  log "✓ Codex: linked $linked skills into $CODEX_SKILLS_DIR/"
+  if [ ${#skipped[@]} -gt 0 ]; then
+    log "  skipped (name conflicts with existing entries):"
+    for s in "${skipped[@]}"; do log "    - $s"; done
+  fi
 fi
 
 # ─── Summary ──────────────────────────────────────────────────

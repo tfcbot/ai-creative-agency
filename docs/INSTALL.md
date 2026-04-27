@@ -22,17 +22,19 @@ future sessions know the skill commands. Setup takes ~30 seconds.
 
 ## Codex
 
-Codex is supported via prefixed symlinks. After cloning the repo
-anywhere on disk, run:
+After cloning the repo anywhere on disk, run:
 
 ```bash
 ./setup --host codex
 ```
 
-This creates `~/.codex/skills/aca-<slug>/` symlinks for all 80 skills,
-each pointing at the corresponding source directory in the cloned repo.
-The `aca-` prefix avoids collisions with other skill packs you may have
-installed.
+This creates `~/.codex/skills/<slug>/` symlinks for all 80 skills, each
+pointing at the corresponding source directory in the cloned repo.
+Slash commands match the catalog (e.g. `/research-niche`).
+
+If a same-named entry already exists in `~/.codex/skills/` (real dir or
+symlink to a different target), that skill is skipped and listed in the
+setup output — no overwrites.
 
 Run `./setup` with no flag to auto-detect installed hosts (Claude Code
 and/or Codex) and register with each.
