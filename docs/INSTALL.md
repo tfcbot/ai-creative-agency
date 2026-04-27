@@ -46,13 +46,6 @@ OpenClaw and Hermes spawn Claude Code sessions via ACP, so installing
 with `--host claude` (or `auto`) makes every skill available in those
 agents transparently. There is no separate setup.
 
-## Other agents
-
-OpenCode, Cursor, and Factory aren't supported by `./setup` yet. The
-`SKILL.md` format itself is portable, so manually symlinking each
-`<skill>/` directory into the agent's skills path will work in
-principle.
-
 ## Manual install
 
 ```bash

@@ -61,15 +61,14 @@ covers.
 See [`docs/INSTALL.md`](docs/INSTALL.md) for manual install and
 troubleshooting.
 
-### Other agents
+### Supported agents
 
-| Agent | Supported | How |
-|---|---|---|
-| Claude Code | ✅ | clone into `~/.claude/skills/ai-creative-agency/` |
-| Codex | ✅ | `./setup --host codex` symlinks each skill into `~/.codex/skills/aca-<slug>/` |
-| OpenClaw | ✅ via Claude | spawns Claude Code via ACP — Claude install covers it |
-| Hermes | ✅ via Claude | spawns Claude Code via ACP — Claude install covers it |
-| OpenCode / Cursor / Factory | ❌ not yet | on the roadmap |
+| Agent | How |
+|---|---|
+| Claude Code | clone into `~/.claude/skills/ai-creative-agency/` |
+| Codex | `./setup --host codex` symlinks each skill into `~/.codex/skills/aca-<slug>/` |
+| OpenClaw | spawns Claude Code via ACP — Claude install covers it |
+| Hermes | spawns Claude Code via ACP — Claude install covers it |
 
 `./setup` with no flag auto-detects which hosts are installed and
 registers with each. Use `--host <name>` to target one explicitly.
