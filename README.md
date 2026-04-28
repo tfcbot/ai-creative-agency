@@ -58,6 +58,32 @@ troubleshooting.
 `./setup` with no flag auto-detects which hosts are installed and
 registers with each. Use `--host <name>` to target one explicitly.
 
+## Update
+
+The easy way — inside Claude Code:
+
+```
+/update-skills
+```
+
+Pulls the latest skill pack, links any new skills, and tells you
+what's new since your last update.
+
+The manual way:
+
+```bash
+cd ~/.claude/skills/ai-creative-agency && git pull && ./setup
+```
+
+Either way, `git pull` updates every skill in place — symlinks resolve
+to the live repo, so edits to existing skills go live immediately.
+`./setup` is idempotent and only links newly added skills that didn't
+exist at your last install — it skips anything already linked and
+never overwrites entries owned by other skill packs.
+
+Restart Claude Code (or `/reload-plugins` in CLI) to surface new slash
+commands in the current session.
+
 ## Skill catalog
 
 ### Strategy & planning
