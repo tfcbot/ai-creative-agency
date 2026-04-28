@@ -44,16 +44,29 @@ if [ ! -d "$REPO/.git" ]; then
 fi
 cd "$REPO"
 
-# 2. Capture the starting commit
-BEFORE="$(git rev-parse HEAD)"
+# 2. Heal the single-branch refspec trap
+# Older installs used `git clone --single-branch --depth 1` which sets
+# remote.origin.fetch to a single-branch refspec. That breaks every future
+# update because origin/main never gets created locally. Detect and fix.
+FETCH_REFSPEC="$(git config --get remote.origin.fetch || true)"
+if [ "$FETCH_REFSPEC" != "+refs/heads/*:refs/remotes/origin/*" ]; then
+  git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+  echo "Fixed single-branch fetch refspec."
+fi
 
-# 3. Refuse to update if the user has uncommitted local changes
-if [ -n "$(git status --porcelain)" ]; then
+# 3. Capture the starting commit (may not exist on a freshly-healed clone)
+BEFORE="$(git rev-parse HEAD 2>/dev/null || echo '')"
+
+# 4. Refuse to update if the user has uncommitted local changes
+if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
   echo "⚠️  Local changes detected in $REPO. Stash or commit them first, then re-run /update-skills."
   exit 1
 fi
 
-# 4. Fast-forward only — don't silently merge
+# 5. Fetch all branches so origin/main exists
+git fetch origin
+
+# 6. Fast-forward only — don't silently merge
 git pull --ff-only
 
 # 5. Idempotent re-link to pick up new skills
