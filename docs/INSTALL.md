@@ -75,9 +75,29 @@ gracefully with the signup link if any are missing — no partial runs.
 
 ## Update
 
-```bash
-cd ~/.claude/skills/ai-creative-agency && git pull
+Inside Claude Code:
+
 ```
+/update-skills
+```
+
+This pulls the repo, runs `./setup` to link any new skills, and
+surfaces a summary of what changed.
+
+Manual fallback:
+
+```bash
+cd ~/.claude/skills/ai-creative-agency && git pull && ./setup
+```
+
+`git pull` updates every skill in place — symlinks resolve to the live
+repo, so edits to existing skills go live immediately. `./setup` is
+idempotent and only links newly added skills that didn't exist at your
+last install — it skips anything already linked and never overwrites
+entries owned by other skill packs.
+
+Restart Claude Code (or `/reload-plugins` in CLI) to surface new slash
+commands in the current session.
 
 ## Troubleshooting
 
