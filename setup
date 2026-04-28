@@ -73,6 +73,62 @@ elif [ "$HOST" = "codex" ]; then
   INSTALL_CODEX=1
 fi
 
+# ─── Git health checks ────────────────────────────────────────
+# Heal common install-time issues so future `git pull` updates work.
+# Skipped silently if this isn't a git checkout (manual install).
+if [ -d "$REPO_ROOT/.git" ]; then
+
+  # 1. Stale .git/config.lock from a killed git process blocks all
+  # config writes (including the refspec heal below). Safe to remove
+  # because if we're running ./setup, we own the only git process.
+  CONFIG_LOCK="$REPO_ROOT/.git/config.lock"
+  if [ -f "$CONFIG_LOCK" ]; then
+    log "Removing stale .git/config.lock"
+    rm -f "$CONFIG_LOCK"
+  fi
+
+  # 2. Heal single-branch fetch refspec. Older install instructions used
+  # `git clone --single-branch --depth 1`, which sets remote.origin.fetch
+  # to a single-branch refspec. That breaks every future update because
+  # `origin/main` never gets created locally, and `git pull` errors with
+  # "your current branch does not have any commits yet" or fails to fast-
+  # forward. Reset to the standard all-branches refspec and re-fetch so
+  # `origin/main` exists for the user's first pull.
+  current_refspec="$(git config --get remote.origin.fetch 2>/dev/null || true)"
+  if [ -n "$current_refspec" ] && [ "$current_refspec" != "+refs/heads/*:refs/remotes/origin/*" ]; then
+    log "Healing single-branch fetch refspec (enables clean updates)"
+    git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+    git fetch --quiet origin 2>/dev/null || true
+  fi
+
+  # 3. Detect orphan-branch state (current HEAD has no commits — e.g.
+  # a clone that landed on an empty `master` branch). Auto-fixing this
+  # would delete the working tree, so warn loudly and stop with the
+  # exact recovery command instead.
+  if ! git rev-parse --verify --quiet HEAD >/dev/null 2>&1; then
+    cat >&2 <<'EOF'
+
+⚠  This clone is on an orphan branch with no commits — likely caused by
+   an older `git clone --single-branch` install. Recover with:
+
+     git fetch origin && git clean -fd && git checkout -B main origin/main
+
+   Then re-run ./setup. (The git clean step is destructive — it deletes
+   any untracked files in the repo. Move anything you want to preserve
+   out of the directory first.)
+
+EOF
+    exit 1
+  fi
+
+  # 4. If HEAD detached or on an unexpected branch, warn but don't fix.
+  current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo HEAD)"
+  if [ "$current_branch" != "main" ] && [ "$current_branch" != "HEAD" ]; then
+    log "ℹ  Current branch is '$current_branch', not 'main' — updates will track this branch."
+    log "   Run \`git checkout main\` if you want to follow upstream."
+  fi
+fi
+
 # ─── Discover skills ──────────────────────────────────────────
 SKILLS=()
 for dir in */; do
