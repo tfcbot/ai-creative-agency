@@ -1,37 +1,21 @@
 # 05 — Render HTML report
 
-Single static `report.html` written to `<OUT>/report.html`. Embedded CSS, vanilla JS for sortable columns. No build step, no localhost.
+The HTML render is the only deterministic piece of this skill — it's pure JSON → HTML. Drive it via the bundled `render-report.ts`:
 
-See `references/html-report-spec.md` for the full column schema and a copyable template.
-
-## Pass-in data
-
-The script renders rows from the `watched` array (from step 4). Each row gets:
-
-| Column | Source |
-|---|---|
-| Rank | index + 1 |
-| Thumb | `item.thumbnail` (img tag, lazy-loaded, fixed 80×142 9:16 box) |
-| Platform | `item.platform` (badge: TT orange / IG pink) |
-| Views | `item.views.toLocaleString()` |
-| Engagement | `(item.engagement_rate * 100).toFixed(1) + "%"` |
-| Handle | `<a href="profile">@handle</a>` |
-| Followers | `item.followers.toLocaleString()` (0 if IG — IG search doesn't expose) |
-| Hook | `item.watch?.hook` |
-| Format | `item.watch?.format` |
-| Confirmed | green ✓ / red ✗ / grey ? based on `item.watch?.is_app` |
-| Watch | `<a href={item.url} target="_blank">open</a>` |
-
-## Sort
-
-Click any column header → sort by that key. Re-click flips direction. Default sort: engagement rate desc.
-
-## Render
-
-After writing the file, log the absolute path:
-
-```
-✓ Report: /abs/path/find-app-ugc-outliers-2026-05-03T17-12-43/report.html
+```bash
+bun "$SKILL_DIR/render-report.ts" "$OUT/manifest.json" --out "$OUT/report.html"
 ```
 
-User opens that file directly in their browser. Do NOT spin up a local server.
+`$SKILL_DIR` = the directory this `SKILL.md` lives in (the agent already knows it from invocation context).
+
+The renderer reads `manifest.json` (whose shape is defined in recipe 06) and writes `report.html` with two sortable tables: UGC outliers ranked by engagement rate, and active Meta ads filtered by brand mention. Embedded CSS, vanilla JS — no build step, no localhost server.
+
+For column schema and styling, see `references/html-report-spec.md`.
+
+## Final output
+
+Print the absolute path to `report.html`. The user opens it directly in their browser.
+
+```
+✓ Report: /abs/path/find-app-ugc-outliers-2026-05-05T17-12-43/report.html
+```

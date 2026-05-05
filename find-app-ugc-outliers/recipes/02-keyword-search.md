@@ -1,10 +1,12 @@
 # 02 — Keyword search fan-out
 
-Hit Scrape Creators across **three lanes: TikTok, Instagram, and the Meta Ad Library**. Build 3–5 query variants from `app_name`. Cache raw responses under `<OUT>/search/` so re-runs and debugging don't re-burn credits.
+Hit Scrape Creators across **three lanes: TikTok, Instagram, and the Meta Ad Library**. Cache every raw response under `$OUT/search/` so the agent can re-rank or re-render without re-burning credits.
+
+For endpoint shapes, parameters, and pagination, see the official [`scrapecreators-api`](https://github.com/scrapecreators/agent-skills) skill — install with `npx skills add scrapecreators/agent-skills` and consult it via the skill router instead of duplicating docs here. The endpoints this skill consumes are listed below.
 
 ## Query variants
 
-Default set, derived from `app_name`:
+Build 3–5 variants from `app_name`. Plus one variant per `brand_keyword` if supplied:
 
 ```
 "<app_name>"
@@ -14,64 +16,39 @@ Default set, derived from `app_name`:
 "<app_name> hack"
 ```
 
-If the user passes `brand_keywords`, add one variant per keyword (team names, coach names, branded hashtags, etc.).
+## Endpoints used
 
-## Endpoints
+| Lane | Endpoint | Purpose |
+|---|---|---|
+| TikTok | `GET /v1/tiktok/search/keyword?query=<q>` | Organic UGC. Returns `aweme_info[]` with `statistics.{play_count, digg_count, comment_count, share_count}` and `video.play_addr.url_list[0]`. |
+| Instagram | `GET /v2/instagram/reels/search?query=<q>` | Organic UGC. Returns `reels[]` with `media.{video_view_count, like_count, comment_count, video_url}`. |
+| Meta Ads | `GET /v1/facebook/adLibrary/search/ads?query=<q>&country=US&status=ACTIVE&trim=true` | Active US paid creative. Returns `searchResults[]` with `ad_archive_id`, `page_name`, `snapshot.{title, body.text, cta_text, link_url, display_format, images[], videos[]}`. |
 
-```
-GET https://api.scrapecreators.com/v1/tiktok/search/keyword?query=<q>
-GET https://api.scrapecreators.com/v2/instagram/reels/search?query=<q>
-GET https://api.scrapecreators.com/v1/facebook/adLibrary/search/ads?query=<q>&country=US&status=ACTIVE&trim=true
-```
+Base: `https://api.scrapecreators.com`. Auth header: `x-api-key: $SCRAPECREATORS_API_KEY`.
 
-Auth header: `x-api-key: $SCRAPE_CREATORS_API_KEY`. Meta Ad Library endpoint shape and brand-mention filter are documented in `references/scrapecreators-meta-ads.md`.
+## Run them in parallel
 
-## Reference implementation
+The agent can fan out with `curl` + `xargs -P` or any equivalent. For each variant, save TikTok, IG, and Meta Ads responses as separate JSON files in `$OUT/search/`:
 
-```ts
-async function searchTikTok(query: string) {
-  const url = `https://api.scrapecreators.com/v1/tiktok/search/keyword?query=${encodeURIComponent(query)}`;
-  const r = await fetch(url, { headers: { "x-api-key": SCRAPE! } });
-  if (!r.ok) return null;
-  return r.json();
-}
-
-async function searchIG(query: string) {
-  const url = `https://api.scrapecreators.com/v2/instagram/reels/search?query=${encodeURIComponent(query)}`;
-  const r = await fetch(url, { headers: { "x-api-key": SCRAPE! } });
-  if (!r.ok) return null;
-  return r.json();
-}
-
-async function searchMetaAds(query: string) {
-  const url = `https://api.scrapecreators.com/v1/facebook/adLibrary/search/ads?query=${encodeURIComponent(query)}&country=US&status=ACTIVE&trim=true`;
-  const r = await fetch(url, { headers: { "x-api-key": SCRAPE! } });
-  if (!r.ok) return null;
-  return r.json();
-}
-
-const variants = [
-  app_name,
-  `${app_name} app`,
-  `${app_name} review`,
-  `${app_name} tutorial`,
-  `${app_name} hack`,
-  ...(brand_keywords ?? []),
-];
-
-const results = await Promise.all(
-  variants.flatMap(q => [
-    searchTikTok(q).then(d => ({ platform: "tiktok", query: q, data: d })),
-    searchIG(q).then(d => ({ platform: "instagram", query: q, data: d })),
-    searchMetaAds(q).then(d => ({ platform: "meta_ads", query: q, data: d })),
-  ])
-);
-
-for (const r of results) {
-  writeFileSync(`${OUT}/search/${r.platform}-${r.query.replace(/\W+/g, "-")}.json`, JSON.stringify(r.data, null, 2));
+```bash
+search_one() {
+  local q="$1"
+  local slug=$(echo "$q" | tr -c '[:alnum:]' '-' | sed 's/-*$//')
+  curl -sS -H "x-api-key: $SCRAPECREATORS_API_KEY" \
+    "https://api.scrapecreators.com/v1/tiktok/search/keyword?query=$(jq -rn --arg q "$q" '$q|@uri')" \
+    > "$OUT/search/tiktok-$slug.json"
+  curl -sS -H "x-api-key: $SCRAPECREATORS_API_KEY" \
+    "https://api.scrapecreators.com/v2/instagram/reels/search?query=$(jq -rn --arg q "$q" '$q|@uri')" \
+    > "$OUT/search/instagram-$slug.json"
+  curl -sS -H "x-api-key: $SCRAPECREATORS_API_KEY" \
+    "https://api.scrapecreators.com/v1/facebook/adLibrary/search/ads?query=$(jq -rn --arg q "$q" '$q|@uri')&country=US&status=ACTIVE&trim=true" \
+    > "$OUT/search/meta-ads-$slug.json"
 }
 ```
 
-Run all three lanes in parallel via `Promise.all`. Don't add YouTube — out of scope for this skill. TikTok ad library is also out of scope (different endpoint, deferred).
+The agent is free to write a different orchestration (Bun, Python, parallel curl) — the only requirement is one JSON file per (lane, variant) pair under `$OUT/search/`.
 
-UGC ranking (TikTok + IG) and Meta-ads filtering happen in different downstream paths — see `references/scrapecreators-search.md` for UGC response shapes (step 3) and `references/scrapecreators-meta-ads.md` for the Meta-ads response shape and brand-mention filter (consumed inline in `run.ts`, not a separate recipe).
+## Out of scope
+
+- **YouTube.** Different attention pattern; UGC for apps lives on TikTok + IG.
+- **TikTok Ad Library.** Different endpoint shape, deferred until demand surfaces.

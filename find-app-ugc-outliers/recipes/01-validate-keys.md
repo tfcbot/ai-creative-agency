@@ -1,26 +1,37 @@
-# 01 — Validate keys
+# 01 — Validate keys & set up the output directory
 
-Stop early with a clear signup link if either key is missing. Don't run a partial pipeline that burns Scrape Creators credits and then fails at VidJutsu.
+Stop early with clear signup links if either key is missing. Don't burn Scrape Creators credits on a run that will fail at VidJutsu.
 
-```ts
-const SCRAPE = process.env.SCRAPE_CREATORS_API_KEY;
-const VIDJUTSU = process.env.VIDJUTSU_API_KEY;
-
-if (!SCRAPE) {
-  console.error("Missing SCRAPE_CREATORS_API_KEY. Sign up: https://app.scrapecreators.com");
-  process.exit(1);
-}
-if (!VIDJUTSU) {
-  console.error("Missing VIDJUTSU_API_KEY. Sign up: https://vidjutsu.ai");
-  process.exit(1);
-}
+```bash
+: "${SCRAPECREATORS_API_KEY:?Missing SCRAPECREATORS_API_KEY. Sign up: https://app.scrapecreators.com}"
+: "${VIDJUTSU_API_KEY:?Missing VIDJUTSU_API_KEY. Sign up: https://vidjutsu.ai}"
 ```
 
-Also create the per-run output directory now so step 6 always has somewhere to write the manifest even if an intermediate step throws:
+Note: this skill uses the official Scrape Creators env var name (`SCRAPECREATORS_API_KEY`, no underscore). If you previously set `SCRAPE_CREATORS_API_KEY`, alias it in `.env`:
 
-```ts
-import { mkdirSync } from "fs";
-const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-const OUT = `${process.cwd()}/find-app-ugc-outliers-${ts}`;
-mkdirSync(OUT, { recursive: true });
 ```
+SCRAPECREATORS_API_KEY=$SCRAPE_CREATORS_API_KEY
+```
+
+## Inputs
+
+Required: `app_name` (e.g. `"Cluely"`, `"Pagepilot"`, `"Cal AI"`).
+
+Optional (improve precision — see `references/classifier-rules.md`):
+
+- `app_handle` — known TikTok/IG handle for the brand
+- `affiliate_handle_pattern` — regex matching affiliate creator handles
+- `brand_keywords` — comma-separated extra confirmation strings
+- `false_positive_keywords` — comma-separated auto-exclude strings
+
+## Output directory
+
+Create one fresh directory per run and pass it through every subsequent recipe:
+
+```bash
+OUT="$(pwd)/find-app-ugc-outliers-$(date -u +%Y-%m-%dT%H-%M-%S)"
+mkdir -p "$OUT/search"
+echo "$OUT"
+```
+
+Raw search payloads land in `$OUT/search/`. The manifest and rendered report land in `$OUT/`.
