@@ -14,7 +14,7 @@ GET https://api.scrapecreators.com/v2/tiktok/video?url=<post_url>&download_media
 GET https://api.scrapecreators.com/v1/instagram/post?url=<post_url>&download_media=true
 ```
 
-Header: `x-api-key: $SCRAPE_CREATORS_API_KEY`
+Header: `x-api-key: $SCRAPECREATORS_API_KEY`
 
 Both return `download_media_urls[]`:
 
@@ -93,4 +93,4 @@ It looks fetchable but isn't. The MP4 URLs that come back inside the search resp
 
 `download_media=true` costs 10 SC credits per call when media is found (1 credit if not), versus 1 credit for the bare `/v2/tiktok/video` call. For 10 top candidates that's ~100 credits — still under $0.20 per skill run.
 
-See `references/vidjutsu-watch.md` and `references/scrapecreators-search.md` for endpoint shapes and failure modes.
+See `references/vidjutsu-watch.md` for the VidJutsu request shape, and the official [`scrapecreators-api`](https://github.com/scrapecreators/agent-skills) skill for Scrape Creators endpoint details.
