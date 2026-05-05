@@ -49,9 +49,17 @@ async function searchIG(query: string): Promise<any> {
     { headers: { "x-api-key": SCRAPE! } });
   return r.ok ? r.json() : null;
 }
+async function searchMetaAds(query: string): Promise<any> {
+  // Meta Ad Library — keyword search, US, currently-active, sorted by impressions (default).
+  // trim=true keeps the payload small; we still get title, body, cta, link_url, videos[], images[].
+  const url = `https://api.scrapecreators.com/v1/facebook/adLibrary/search/ads?query=${encodeURIComponent(query)}&country=US&status=ACTIVE&trim=true`;
+  const r = await fetch(url, { headers: { "x-api-key": SCRAPE! } });
+  return r.ok ? r.json() : null;
+}
 
-console.log(`Searching ${variants.length} variants × 2 platforms…`);
+console.log(`Searching ${variants.length} variants × 3 lanes (TikTok, Instagram, Meta Ads)…`);
 const searchTasks: Promise<{ platform: string; query: string; data: any; path: string }>[] = [];
+const metaAdsTasks: Promise<{ query: string; data: any; path: string }>[] = [];
 for (const q of variants) {
   const slug = q.replace(/\W+/g, "-");
   searchTasks.push(searchTikTok(q).then(d => {
@@ -64,8 +72,16 @@ for (const q of variants) {
     writeFileSync(`${OUT}/${path}`, JSON.stringify(d, null, 2));
     return { platform: "instagram", query: q, data: d, path };
   }));
+  metaAdsTasks.push(searchMetaAds(q).then(d => {
+    const path = `search/meta-ads-${slug}.json`;
+    writeFileSync(`${OUT}/${path}`, JSON.stringify(d, null, 2));
+    return { query: q, data: d, path };
+  }));
 }
-const searchResults = await Promise.all(searchTasks);
+const [searchResults, metaAdsResults] = await Promise.all([
+  Promise.all(searchTasks),
+  Promise.all(metaAdsTasks),
+]);
 
 // ── 3. Normalize, dedupe, classify ────────────────────────────────────────────
 type Verdict = "CONFIRMED" | "NOT_APP" | "AMBIGUOUS";
@@ -232,6 +248,72 @@ for (let i = 0; i < top10.length; i += BATCH) {
   }
 }
 
+// ── 4b. Normalize Meta Ads ────────────────────────────────────────────────────
+// Meta ads are not ranked into the UGC table — they have no engagement metrics
+// (Meta Ad Library exposes neither impressions nor reach for non-political ads).
+// Surface them as a separate section so the user sees what the brand is paying
+// to push alongside what creators are organically posting.
+type MetaAd = {
+  ad_archive_id: string;
+  page_name: string;
+  page_id: string;
+  is_active: boolean;
+  start_date_string: string | null;
+  end_date_string: string | null;
+  display_format: string;
+  title: string;
+  body: string;
+  cta_text: string | null;
+  link_url: string | null;
+  video_url: string | null;
+  thumbnail: string | null;
+  ad_library_url: string;
+  matched_query: string;
+};
+
+const metaAds: MetaAd[] = [];
+const seenAdIds = new Set<string>();
+const app_lc = app_name!.toLowerCase();
+function metaMatchesApp(page: string, body: string, link: string): boolean {
+  const blob = `${page} ${body} ${link}`.toLowerCase();
+  if (blob.includes(app_lc)) return true;
+  for (const kw of brand_keywords) if (blob.includes(kw.toLowerCase())) return true;
+  return false;
+}
+
+for (const r of metaAdsResults) {
+  const list = r.data?.searchResults ?? [];
+  for (const ad of list) {
+    if (!ad?.ad_archive_id || seenAdIds.has(ad.ad_archive_id)) continue;
+    const snap = ad.snapshot ?? {};
+    const body = (snap.body?.text ?? "").replace(/\s+/g, " ").trim();
+    const title = (snap.title ?? "").trim();
+    const link = snap.link_url ?? "";
+    const pageName = ad.page_name ?? snap.page_name ?? "";
+    if (!metaMatchesApp(pageName, `${title} ${body}`, link)) continue;
+    seenAdIds.add(ad.ad_archive_id);
+    const video = snap.videos?.[0] ?? null;
+    metaAds.push({
+      ad_archive_id: String(ad.ad_archive_id),
+      page_name: pageName,
+      page_id: ad.page_id ?? snap.page_id ?? "",
+      is_active: !!ad.is_active,
+      start_date_string: ad.start_date_string ?? null,
+      end_date_string: ad.end_date_string ?? null,
+      display_format: snap.display_format ?? "UNKNOWN",
+      title,
+      body,
+      cta_text: snap.cta_text ?? null,
+      link_url: link || null,
+      video_url: video?.video_hd_url ?? video?.video_sd_url ?? null,
+      thumbnail: video?.video_preview_image_url ?? snap.images?.[0]?.resized_image_url ?? snap.images?.[0]?.original_image_url ?? null,
+      ad_library_url: ad.url ?? `https://www.facebook.com/ads/library?id=${ad.ad_archive_id}`,
+      matched_query: r.query,
+    });
+  }
+}
+console.log(`Meta ads: ${metaAds.length} active ads matched after dedupe + brand filter`);
+
 // ── 5. Render HTML report ─────────────────────────────────────────────────────
 const ranked = watched.map((w, i) => ({ ...w, rank: i + 1 }));
 const confirmed = ranked.filter(r => r.watch?.is_app === true).length;
@@ -271,7 +353,7 @@ const html = `<!doctype html>
 </head><body>
 <header>
   <h1>${app_name} — UGC outliers</h1>
-  <div class="meta">Generated ${new Date().toISOString().replace("T", " ").slice(0, 16)} UTC · ${items.length} candidates · ${ranked.length} watched · ${confirmed} confirmed · ${falsepos} false-positive · ${failed} failed · TikTok + Instagram only</div>
+  <div class="meta">Generated ${new Date().toISOString().replace("T", " ").slice(0, 16)} UTC · ${items.length} UGC candidates · ${ranked.length} watched · ${confirmed} confirmed · ${falsepos} false-positive · ${failed} failed · ${metaAds.length} Meta ads · TikTok + Instagram + Meta Ad Library</div>
 </header>
 <table>
 <thead><tr>
@@ -289,6 +371,21 @@ const html = `<!doctype html>
 </tr></thead>
 <tbody></tbody>
 </table>
+<h2 style="margin:32px 0 8px;font-size:18px">Meta Ad Library — active paid ads (${metaAds.length})</h2>
+<div class="meta" style="margin-bottom:8px">Brand-mention filtered. Meta does not expose impression or reach data for non-political ads, so these are not ranked — sort by start date or click through for full creative.</div>
+${metaAds.length === 0 ? '<div class="meta" style="padding:12px 0">No Meta ads matched. Either the brand isn\'t running active US Meta ads, or the app name didn\'t hit the keyword filter.</div>' : `<table id="metatable">
+<thead><tr>
+  <th data-sort-meta="page_name">Page</th>
+  <th>Thumb</th>
+  <th data-sort-meta="display_format">Format</th>
+  <th>Headline / Body</th>
+  <th data-sort-meta="cta_text">CTA</th>
+  <th>Landing</th>
+  <th data-sort-meta="start_date_string">Started</th>
+  <th>Ad</th>
+</tr></thead>
+<tbody></tbody>
+</table>`}
 <footer>Generated by <a href="https://github.com/tfcbot/ai-creative-agency">find-app-ugc-outliers</a></footer>
 <script>
 const data = ${JSON.stringify(ranked)};
@@ -341,6 +438,43 @@ document.querySelectorAll("th[data-sort]").forEach(th => {
   });
 });
 render();
+
+const metaAds = ${JSON.stringify(metaAds)};
+const metaTable = document.getElementById("metatable");
+if (metaTable && metaAds.length) {
+  let mkey = "start_date_string", mdir = -1;
+  const mbody = metaTable.querySelector("tbody");
+  const trim = (s, n) => (s ?? "").length > n ? (s ?? "").slice(0, n) + "…" : (s ?? "");
+  function metaRow(a) {
+    const headline = a.title ? '<strong>' + a.title + '</strong><br>' : '';
+    const body = trim(a.body, 220);
+    return '<tr>' +
+      '<td><a href="https://www.facebook.com/' + a.page_id + '" target="_blank">' + a.page_name + '</a></td>' +
+      '<td>' + (a.thumbnail ? '<img class="thumb" loading="lazy" src="' + a.thumbnail + '">' : '<div class="thumb"></div>') + '</td>' +
+      '<td>' + a.display_format + '</td>' +
+      '<td class="hook">' + headline + body + '</td>' +
+      '<td>' + (a.cta_text ?? '—') + '</td>' +
+      '<td>' + (a.link_url ? '<a href="' + a.link_url + '" target="_blank">open</a>' : '—') + '</td>' +
+      '<td>' + (a.start_date_string ? a.start_date_string.slice(0,10) : '—') + '</td>' +
+      '<td><a href="' + a.ad_library_url + '" target="_blank">library</a></td>' +
+    '</tr>';
+  }
+  function mrender() {
+    const rows = [...metaAds].sort((a,b) => {
+      const av = a[mkey] ?? "", bv = b[mkey] ?? "";
+      return av < bv ? mdir : av > bv ? -mdir : 0;
+    });
+    mbody.innerHTML = rows.map(metaRow).join("");
+  }
+  metaTable.querySelectorAll("th[data-sort-meta]").forEach(th => {
+    th.addEventListener("click", () => {
+      const k = th.dataset.sortMeta;
+      if (k === mkey) mdir = -mdir; else { mkey = k; mdir = -1; }
+      mrender();
+    });
+  });
+  mrender();
+}
 </script>
 </body></html>`;
 
@@ -353,12 +487,14 @@ const manifest = {
   ran_at: new Date().toISOString(),
   input: { app_name, app_handle: app_handle ?? null, affiliate_handle_pattern: affiliate_handle_pattern ?? null, brand_keywords, false_positive_keywords },
   queries: variants,
-  platforms: ["tiktok", "instagram"],
-  raw_search_paths: searchResults.map(r => r.path),
+  platforms: ["tiktok", "instagram", "meta_ads"],
+  raw_search_paths: [...searchResults.map(r => r.path), ...metaAdsResults.map(r => r.path)],
   candidates_total: items.length,
   candidates_after_filter: items.filter(i => i.verdict !== "NOT_APP").length,
   verdict_counts: verdictCounts,
   top10: ranked,
+  meta_ads_total: metaAds.length,
+  meta_ads: metaAds,
 };
 writeFileSync(`${OUT}/manifest.json`, JSON.stringify(manifest, null, 2));
 
@@ -366,3 +502,4 @@ console.log("");
 console.log(`✓ Report:   ${OUT}/report.html`);
 console.log(`✓ Manifest: ${OUT}/manifest.json`);
 console.log(`✓ Top 10:   ${confirmed} confirmed, ${falsepos} false-positive, ${failed} failed-to-watch`);
+console.log(`✓ Meta ads: ${metaAds.length} active`);
