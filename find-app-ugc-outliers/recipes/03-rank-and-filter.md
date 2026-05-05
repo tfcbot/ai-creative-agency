@@ -97,32 +97,4 @@ const top10 = items
   .slice(0, 10);
 ```
 
-## Meta Ads — separate filter pass (no engagement signal)
-
-Meta Ad Library exposes neither impressions nor reach for non-political ads, so Meta ads are **not** ranked into the UGC top-10 list. Instead, normalize them and filter by brand mention:
-
-```ts
-type MetaAd = {
-  ad_archive_id: string;
-  page_name: string;
-  page_id: string;
-  display_format: "IMAGE" | "VIDEO" | "DCO" | "CAROUSEL" | string;
-  title: string;
-  body: string;                  // snapshot.body.text, whitespace-collapsed
-  cta_text: string | null;
-  link_url: string | null;
-  thumbnail: string | null;      // video_preview_image_url ?? images[0].resized_image_url
-  start_date_string: string | null;
-  ad_library_url: string;
-};
-
-function metaMatchesApp(ad: MetaAd, app_name: string, brand_keywords: string[]): boolean {
-  const blob = `${ad.page_name} ${ad.title} ${ad.body} ${ad.link_url ?? ""}`.toLowerCase();
-  if (blob.includes(app_name.toLowerCase())) return true;
-  return brand_keywords.some(kw => blob.includes(kw.toLowerCase()));
-}
-```
-
-Dedupe by `ad_archive_id`. Keep only ads where `metaMatchesApp(...)` returns true. Result is the `meta_ads[]` array passed to step 6's manifest. The brand-mention filter is intentionally strict — `query=Cluely` returns ~50k unrelated ads, and false positives flood the report. If a legit ad doesn't name the app in copy, it gets dropped; that's an acceptable tradeoff. Loosen by passing more `brand_keywords` if it bites.
-
-Meta ads are **not** sent to VidJutsu — see SKILL.md "Hard rules" for rationale.
+The 10 candidates produced here are the **unverified** top-10 — recipe 04 watches each with VidJutsu and only confirmed entries make it into the final report.

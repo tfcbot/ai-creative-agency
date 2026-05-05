@@ -28,22 +28,38 @@ Response:
 - Gemini's `fileData.fileUri` only accepts YouTube URLs for the URL form, so for TikTok / IG MP4s you'd be forced into Files API anyway.
 - VidJutsu is the correct provider for the AI-creative-agency repo per ETHOS principle 4 ("VidJutsu for QA").
 
-## Confirmation prompt template
+## Confirmation prompt template (bio-aware)
 
 ```
-You are watching this short-form video to verify whether it is about the app "<app_name>".
+You are watching a short-form video to verify whether it is about the app "<app_name>".
+
+You also have additional context — the creator's profile bio:
+"""
+<bio text>
+<bio link if present>
+"""
 
 Reply in this exact JSON format with no other text:
 {
   "is_app": true|false,
   "confidence": "high"|"medium"|"low",
-  "evidence": "<one sentence — what specifically in the video tells you>",
-  "hook": "<one sentence describing the first 3 seconds>",
-  "format": "<one short phrase: e.g. 'talking-head review', 'split-screen demo', 'unboxing', 'voiceover walkthrough', 'POV story'>"
+  "evidence": "<one sentence — what specifically tells you this is/isn't about the app: UI shown, brand mention in audio, affiliate code, bio CTA, or false-match>",
+  "bio_signal": "<'cta' if the bio links/mentions the app or an affiliate landing page for it, 'soft' if the bio mentions casually without a clear CTA, 'none' if the bio is unrelated>",
+  "hook": "<one sentence describing the first 3 seconds — visual + spoken opening>",
+  "format": "<one short phrase: e.g. 'talking-head review', 'split-screen demo', 'unboxing', 'voiceover walkthrough', 'POV story'>",
+  "shot_list": ["<shot 1>", "<shot 2>", "<shot 3>", "..."]
 }
 
-Be strict. If "<app_name>" appears only as a generic noun (workout term, sports league, dictionary word) without showing the app's UI, brand, or affiliate code — return false.
+Be strict on is_app. The video must show the app's UI, mention the brand by name in audio, OR the bio must contain a clear CTA to the app's landing page or an affiliate code for it. If "<app_name>" appears only as a generic noun and the bio is unrelated, return false.
+
+The bio is decisive context — if the bio CTAs the app, treat ambiguous video evidence as confirmation. If the bio is unrelated, weight video evidence harder.
+
+For shot_list, return 3-6 short phrases describing actual shots in order. This feeds the pattern-synthesis step.
 ```
+
+## Why bio context matters
+
+Affiliate UGC is intentionally low-signal in-post — affiliates make more money when posts read as organic. The Her75 case: 12 affiliate creators, none mention "Her75" in audio, all link `her75.app/<vanity>` in bio. Without bio context, VidJutsu would reject every post as a false positive. With it, every post resolves to `is_app: true, bio_signal: "cta"` cleanly.
 
 ## Hard-won learnings
 
